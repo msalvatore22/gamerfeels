@@ -1,0 +1,20 @@
+{
+    "moby": {
+        "endpoint": "https://api.mobygames.com/v1/",
+        "api_step": 100,
+        "request_rate_limit": 0.1,
+        "modern_platforms": [
+            "Windows",
+            "Macintosh",
+            "iPhone",
+            "iPad",
+            "Android",
+            "Nintendo Switch",
+            "PlayStation 4",
+            "PlayStation 5",
+            "Xbox One",
+            "Xbox Series",
+            "Xbox Cloud Gaming"
+        ]
+    }
+}
