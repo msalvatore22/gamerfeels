@@ -6,16 +6,12 @@ import json
 import time
 from google.cloud import firestore
 
-
 load_dotenv()
-with open('config.json', 'r') as f:
-    config = json.load(f)
 
-ENDPOINT = config['moby']['endpoint']
-API_STEP = config['moby']['api_step']
-REQ_RATE = config['moby']['request_rate_limit']
+ENDPOINT = "https://api.mobygames.com/v1/"
+API_STEP = 100
+REQ_RATE = 0.1
 API_KEY = os.environ.get("MOBY_GAMES_API_KEY")
-
 
 def RateLimited(max_per_second):
     minInterval = 1.0 / float(max_per_second) # 10 seconds
@@ -42,8 +38,21 @@ def moby_games_client(resource, params):
     return response.json()
 
 @RateLimited(REQ_RATE)
-def get_modern_platforms():
-    modern_platforms = config["moby"]["modern_platforms"]
+def get_modern_platforms(*args, **kargs):
+    print("get_modern_platforms called")
+    modern_platforms = [
+        "Windows",
+        "Macintosh",
+        "iPhone",
+        "iPad",
+        "Android",
+        "Nintendo Switch",
+        "PlayStation 4",
+        "PlayStation 5",
+        "Xbox One",
+        "Xbox Series",
+        "Xbox Cloud Gaming"
+    ]
     key = 'platforms'
     platforms = []
     try:
@@ -55,12 +64,13 @@ def get_modern_platforms():
         for platform in res_json[key]:
             if platform["platform_name"] in modern_platforms:
                 platforms.append(platform)
-        
+        print(platforms)
         return platforms
     except Exception as e:
             print(e)
 
-def get_games(platforms):
+def get_games(*args, **kargs):
+    print("get_games called")
     key = 'games'
     for platform in platforms:
         last_no_res = 1
@@ -82,13 +92,7 @@ def get_games(platforms):
             except Exception as e:
                 print(e)
 
-def persist_games(games):
-    db = firestore.Client(project="gamertracker")
+def persist_games(games, *args, **kargs):
+    db = firestore.Client(project="gamerfeels")
     for game in games:
         db.collection("games").document(str(game["game_id"])).set(game)
-
-
-if __name__ == '__main__':
-    platforms = get_modern_platforms()
-    get_games(platforms)
-    
